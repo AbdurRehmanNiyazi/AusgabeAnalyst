@@ -2,12 +2,13 @@
 AusgabeAnalyst - Main Streamlit Application
 MVC Architecture Implementation
 """
-
+import self
 import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime
 import sys
+import version
 
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
@@ -19,7 +20,7 @@ from src.visualizer import ExpenseVisualizer
 
 # Page configuration
 st.set_page_config(
-    page_title="AusgabeAnalyst",
+    page_title="AusgabeAnalyst v1.0.1",
     page_icon="💰",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -28,6 +29,10 @@ st.set_page_config(
 
 class ExpenseTrackerApp:
     """Main application controller"""
+
+    #Version = (f"v{__version__}")
+    st.sidebar.caption(f"App Version: v{version.__version__}")
+
 
     def __init__(self):
         """Initialize the application"""
@@ -46,7 +51,7 @@ class ExpenseTrackerApp:
         self._render_sidebar()
 
         # Main content
-        st.title("💰 AusgabeAnalyst")
+        st.title(f"💰 AusgabeAnalyst v{version.__version__}")
         st.markdown("---")
 
         # Create tabs
@@ -146,11 +151,16 @@ class ExpenseTrackerApp:
             - Skipped (duplicates): {add_result['skipped']} transactions
             """)
 
-            # Force rerun to update displays
-            st.rerun()
+            # Move st.rerun() OUTSIDE the try block or handle it specifically
+            should_rerun = True
 
         except Exception as e:
+            # This was catching the RerunData signal and showing it as an error
             st.sidebar.error(f"Error processing file: {str(e)}")
+            should_rerun = False
+
+        if should_rerun:
+            st.rerun()
 
     def _export_data(self):
         """Export data to Excel"""

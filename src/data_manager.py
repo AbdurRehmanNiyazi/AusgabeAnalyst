@@ -9,6 +9,8 @@ from typing import List, Dict
 from datetime import datetime
 import hashlib
 
+import self
+
 
 class DataManager:
     """Manages expense data storage and retrieval"""
@@ -38,6 +40,12 @@ class DataManager:
         ]
         df = pd.DataFrame(columns=columns)
         df.to_csv(self.csv_path, index=False)
+
+    def clear_all_data(self):
+        """Deletes all transactions and resets the CSV"""
+        if os.path.exists(self.csv_path):
+            os.remove(self.csv_path)
+        self._initialize_csv()  # This recreates the empty file
 
     def _generate_transaction_id(self, transaction: Dict) -> str:
         """
@@ -260,10 +268,3 @@ class DataManager:
             category = self.get_category_summary()
             if not category.empty:
                 category.to_excel(writer, sheet_name='Categories', index=False)
-
-
-def clear_all_data(self):
-    """Delete all data"""
-    if os.path.exists(self.output_path):
-        os.remove(self.output_path)
-        self._initialize_csv() # Recreates empty file with headers

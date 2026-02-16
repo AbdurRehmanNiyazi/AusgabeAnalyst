@@ -94,30 +94,60 @@ class VolksbankPDFParser:
         return metadata
 
     def _extract_transactions(self, text: str, year: Optional[str] = None) -> List[Dict]:
-        """Extract individual transactions from the statement text"""
+        """Extract individual transactions from the statement text with multi-line support"""
         transactions = []
-
-        # Use current year if not provided
         if not year:
             year = str(datetime.now().year)
 
-        # Find all transaction matches
-        matches = self.transaction_pattern.finditer(text)
+        # This pattern identifies the start of a transaction row (Date Date)
+        row_start_pattern = re.compile(r'^(\d{2}\.\d{2}\.)\s+(\d{2}\.\d{2}\.)', re.MULTILINE)
 
-        for match in matches:
-            value_date_str, booking_date_str, description, amount_str, type_indicator = match.groups()
+        # We also need to identify the ending (Amount S/H)
+        amount_pattern = re.compile(r'([\d,\.]+)\s+([SH])$')
 
-            # Parse the transaction
-            transaction = {
-                'value_date': self._parse_date(value_date_str, year),
-                'booking_date': self._parse_date(booking_date_str, year),
-                'description': self._clean_description(description),
-                'amount': self._parse_amount(amount_str, type_indicator),
-                'type': 'Credit' if type_indicator == 'H' else 'Debit',
-                'raw_description': description.strip()
-            }
+        lines = text.split('\n')
+        current_transaction = None
 
-            transactions.append(transaction)
+        for line in lines:
+            line = line.strip()
+            row_match = row_start_pattern.match(line)
+
+            if row_match:
+                # If we were already building a transaction, save it
+                if current_transaction:
+                    transactions.append(current_transaction)
+
+                # Start a new transaction
+                val_date, book_date = row_match.groups()
+                # Find the amount at the end of this same line
+                amt_match = amount_pattern.search(line)
+
+                if amt_match:
+                    amt_str, type_ind = amt_match.groups()
+                    # Everything between the dates and the amount is the first line of description
+                    desc_part = line[row_match.end():amt_match.start()].strip()
+
+                    current_transaction = {
+                        'value_date': self._parse_date(val_date, year),
+                        'booking_date': self._parse_date(book_date, year),
+                        'description_lines': [desc_part],
+                        'amount': self._parse_amount(amt_str, type_ind),
+                        'type': 'Credit' if type_ind == 'H' else 'Debit',
+                        'raw_description': line
+                    }
+            elif current_transaction and line and not re.match(r'^\d', line):
+                # This line belongs to the previous transaction's description
+                # We skip lines starting with digits to avoid capturing page footers or metadata
+                current_transaction['description_lines'].append(line)
+                current_transaction['raw_description'] += " " + line
+
+        # Add the final transaction
+        if current_transaction:
+            transactions.append(current_transaction)
+
+        # Finalize the description by joining all captured lines
+        for t in transactions:
+            t['description'] = " ".join(t.pop('description_lines'))
 
         return transactions
 

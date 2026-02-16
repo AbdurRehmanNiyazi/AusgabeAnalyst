@@ -41,11 +41,11 @@ class TransactionCategorizer:
         ]
 
         # First, check high-priority specific categories
-        for cat_name in priority_order:
-            if cat_name in self.category_keywords:
-                for keyword in self.category_keywords[cat_name]:
+        for category in priority_order:
+            if category in self.category_keywords:
+                for keyword in self.category_keywords[category]:
                     if keyword.lower() in description_lower:
-                        return cat_name
+                        return category
 
         # Secondly, check remaining categories (Transfers, Cash, etc.)
         for category, keywords in self.category_keywords.items():

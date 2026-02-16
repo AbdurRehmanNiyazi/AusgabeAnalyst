@@ -101,7 +101,13 @@ In PyCharm terminal:
 ```bash
 streamlit run app.py
 ```
+Note: When you run streamlit run main.py,
+it defaults to localhost. To allow your Android phone to connect,
+you must bind it to your local network interface using the --server.address flag.
 
+```bash
+streamlit run main.py --server.address 0.0.0.0
+```
 Or create a Run Configuration:
 1. Click `Run` → `Edit Configurations`
 2. Click `+` → `Python`
@@ -327,3 +333,15 @@ For issues or questions:
 ---
 
 **Happy Tracking! 💰📊**
+
+
+## Version History
+
+### **v1.0.1 (Current Version, Dated: 16 February 2026)
+
+    + [Logic] Prioritized vendor keywords (Aldi, Lidl, etc.) over generic banking labels.
+    + [Parser] Implemented multi-line block detection for PDF vendor names.
+    + [UI] Fixed st.rerun() bug that caused "RerunData" error messages.
+    + [Data] Added "Delete All Data" feature to reset the local database.
+    + [Fix] Resolved AttributeError by fixing method indentation in data_manager.py.
+

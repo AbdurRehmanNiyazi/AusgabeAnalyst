@@ -190,7 +190,7 @@ DD.MM. DD.MM. Description PN:XXX Amount S/H
         }
     ],
     'metadata': {
-        'iban': 'DE94513900000017354108',
+        'iban': 'DE94XXXXXXXXXXXXXXXXXX',
         'statement_number': '6',
         'year': '2025',
         'old_balance': 26.71,
@@ -578,6 +578,6 @@ class SparkasseParser(BankStatementParser):
 
 ---
 
-**Last Updated**: 03 February 2026
+**Project created**: 03 February 2026
 **Version**: 1.0.0
 **Maintainer**: Abdur Rehman Niyazi
