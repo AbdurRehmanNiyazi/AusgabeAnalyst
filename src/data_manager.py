@@ -3,13 +3,12 @@ Data Manager Module
 Handles CSV storage, duplicate detection, and data persistence
 """
 
-import pandas as pd
-import os
-from typing import List, Dict
-from datetime import datetime
 import hashlib
+import os
+from datetime import datetime
+from typing import List, Dict
 
-import self
+import pandas as pd
 
 
 class DataManager:
