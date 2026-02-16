@@ -2,12 +2,12 @@
 AusgabeAnalyst - Main Streamlit Application
 MVC Architecture Implementation
 """
-import self
-import streamlit as st
-import pandas as pd
 import os
-from datetime import datetime
 import sys
+from datetime import datetime
+
+import streamlit as st
+
 import version
 
 # Add src to path
